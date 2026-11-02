@@ -1,0 +1,5 @@
+sqlalchemy>=2.0.0
+fpdf2>=2.7.0
+customtkinter>=5.2.0
+pillow>=10.0.0
+tkcalendar>=1.6.1

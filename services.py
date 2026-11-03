@@ -2,6 +2,7 @@ from sqlalchemy import func
 from database import SessionLocal
 from models import MovimientoCaja, CierreCaja, MetodoPago, Proveedor, MovimientoProveedor
 from datetime import datetime
+import shutil
 
 def registrar_ingreso_caja(monto: float, metodo: MetodoPago, descripcion: str = ""):
     session = SessionLocal()
@@ -70,21 +71,18 @@ def cerrar_caja():
 def obtener_historial_cierres(fecha_desde=None, fecha_hasta=None):
     session = SessionLocal()
     query = session.query(CierreCaja)
-    
     if fecha_desde:
         try:
             d_desde = datetime.strptime(fecha_desde, "%d/%m/%Y")
             query = query.filter(CierreCaja.fecha_cierre >= d_desde)
         except ValueError:
             pass
-            
     if fecha_hasta:
         try:
             d_hasta = datetime.strptime(fecha_hasta, "%d/%m/%Y").replace(hour=23, minute=59, second=59)
             query = query.filter(CierreCaja.fecha_cierre <= d_hasta)
         except ValueError:
             pass
-            
     cierres = query.order_by(CierreCaja.fecha_cierre.desc()).all()
     resultado = [{"id": c.id, "fecha": c.fecha_cierre.strftime("%d/%m/%Y %H:%M"), "ingresos": c.total_ingresos, "egresos": c.total_egresos, "saldo_final": c.saldo_final} for c in cierres]
     session.close()
@@ -99,7 +97,7 @@ def obtener_detalle_cierre(cierre_id: int):
         if m.tipo == 'INGRESO': saldo_acumulado += m.monto
         elif m.tipo == 'EGRESO': saldo_acumulado -= m.monto
         elif m.tipo == 'APERTURA': saldo_acumulado += m.monto
-        resultado.append({"fecha": m.fecha.strftime("%H:%M:%S"), "tipo": m.tipo, "monto": m.monto, "metodo": m.metodo_pago.value, "descripcion": m.descripcion or "", "saldo_momento": saldo_acumulado})
+        resultado.append({"id": m.id, "fecha": m.fecha.strftime("%H:%M:%S"), "tipo": m.tipo, "monto": m.monto, "metodo": m.metodo_pago.value, "descripcion": m.descripcion or "", "saldo_momento": saldo_acumulado})
     session.close()
     return resultado
 
@@ -168,7 +166,7 @@ def obtener_historial_proveedor(prov_id: int):
     resultado = []
     for m in movimientos:
         resultado.append({
-            "fecha": m.fecha.strftime("%d/%m/%Y %H:%M"), "tipo": m.tipo, "monto": m.monto, "descripcion": m.descripcion or "",
+            "id": m.id, "fecha": m.fecha.strftime("%d/%m/%Y %H:%M"), "tipo": m.tipo, "monto": m.monto, "descripcion": m.descripcion or "",
             "factura": m.numero_factura or "-", "remito": m.numero_remito or "-", "vencimiento": m.fecha_vencimiento or "-", "saldo_momento": m.saldo_historico
         })
     session.close()
@@ -181,12 +179,10 @@ def obtener_vencimientos_calendario():
         MovimientoProveedor.fecha_vencimiento != None,
         MovimientoProveedor.fecha_vencimiento != ""
     ).all()
-    
     vencimientos = {}
     for mov, prov in pedidos:
         if prov.saldo_deuda <= 0:
             continue
-            
         fecha_str = mov.fecha_vencimiento.strip()
         try:
             if '/' in fecha_str:
@@ -201,7 +197,6 @@ def obtener_vencimientos_calendario():
             vencimientos[d].append(f"• {prov.nombre} | Fact: {nro_fact} (${mov.monto:,.2f})")
         except ValueError:
             continue
-            
     session.close()
     return vencimientos
 
@@ -212,14 +207,11 @@ def obtener_alertas_vencimiento():
         MovimientoProveedor.fecha_vencimiento != None,
         MovimientoProveedor.fecha_vencimiento != ""
     ).all()
-    
     alertas = []
     hoy = datetime.now().date()
-    
     for mov, prov in pedidos:
         if prov.saldo_deuda <= 0:
             continue
-            
         fecha_str = mov.fecha_vencimiento.strip()
         try:
             if '/' in fecha_str:
@@ -228,9 +220,7 @@ def obtener_alertas_vencimiento():
                 d = datetime.strptime(fecha_str, "%Y-%m-%d").date()
             else:
                 continue
-            
             diferencia = (d - hoy).days
-            
             if 0 <= diferencia <= 2:
                 dias_txt = f"en {diferencia} día(s)" if diferencia > 0 else "¡HOY!"
                 nro_fact = mov.numero_factura or "S/N"
@@ -238,29 +228,21 @@ def obtener_alertas_vencimiento():
             elif diferencia < 0:
                 nro_fact = mov.numero_factura or "S/N"
                 alertas.append(f"• {prov.nombre} | Fact: {nro_fact} | ¡VENCIDA hace {abs(diferencia)} día(s)! (${mov.monto:,.2f})")
-                
         except ValueError:
             continue
-            
     session.close()
     return alertas
 
 def obtener_estadisticas_generales():
     session = SessionLocal()
-    # Total de deuda acumulada con proveedores
     total_deuda = session.query(func.sum(Proveedor.saldo_deuda)).scalar() or 0.0
-    
-    # Total de ingresos y egresos históricos en caja abierta o cerrada
     movimientos = session.query(MovimientoCaja).all()
     tot_ingresos = sum(m.monto for m in movimientos if m.tipo == 'INGRESO')
     tot_egresos = sum(m.monto for m in movimientos if m.tipo == 'EGRESO')
-    
-    # Desglose de ingresos por método de pago
     metodos_ingreso = {metodo.value: 0.0 for metodo in MetodoPago}
     for m in movimientos:
         if m.tipo == 'INGRESO':
             metodos_ingreso[m.metodo_pago.value] += m.monto
-            
     session.close()
     return {
         "total_deuda": total_deuda,
@@ -268,9 +250,6 @@ def obtener_estadisticas_generales():
         "tot_egresos": tot_egresos,
         "metodos_ingreso": metodos_ingreso
     }
-
-import shutil
-from sqlalchemy import desc
 
 def anular_movimiento_caja(mov_id: int):
     session = SessionLocal()
@@ -284,11 +263,8 @@ def obtener_movimientos_caja_abierta():
     session = SessionLocal()
     movimientos = session.query(MovimientoCaja).filter(MovimientoCaja.cierre_id == None).order_by(MovimientoCaja.fecha.desc()).all()
     resultado = [{
-        "id": m.id,
-        "fecha": m.fecha.strftime("%d/%m/%Y %H:%M:%S"),
-        "tipo": m.tipo,
-        "monto": m.monto,
-        "metodo": m.metodo_pago.value,
+        "id": m.id, "fecha": m.fecha.strftime("%d/%m/%Y %H:%M:%S"),
+        "tipo": m.tipo, "monto": m.monto, "metodo": m.metodo_pago.value,
         "descripcion": m.descripcion or ""
     } for m in movimientos]
     session.close()
@@ -300,3 +276,30 @@ def hacer_backup_base_datos(ruta_destino: str):
         return True
     except Exception:
         return False
+
+def recalcular_saldos_proveedor(prov_id: int, session):
+    movimientos = session.query(MovimientoProveedor).filter(MovimientoProveedor.proveedor_id == prov_id).order_by(MovimientoProveedor.fecha.asc(), MovimientoProveedor.id.asc()).all()
+    saldo = 0.0
+    for m in movimientos:
+        if m.tipo == 'PEDIDO':
+            saldo += m.monto
+        elif m.tipo == 'PAGO':
+            saldo -= m.monto
+        m.saldo_historico = saldo
+    prov = session.query(Proveedor).filter(Proveedor.id == prov_id).first()
+    if prov:
+        prov.saldo_deuda = saldo
+
+def modificar_pedido_proveedor(mov_id: int, nuevo_monto: float, nueva_desc: str, nueva_fact: str, nuevo_remito: str, nuevo_venc: str):
+    session = SessionLocal()
+    mov = session.query(MovimientoProveedor).filter(MovimientoProveedor.id == mov_id).first()
+    if mov and mov.tipo == 'PEDIDO':
+        mov.monto = nuevo_monto
+        mov.descripcion = nueva_desc
+        mov.numero_factura = nueva_fact
+        mov.numero_remito = nuevo_remito
+        mov.fecha_vencimiento = nuevo_venc
+        session.commit()
+        recalcular_saldos_proveedor(mov.proveedor_id, session)
+        session.commit()
+    session.close()

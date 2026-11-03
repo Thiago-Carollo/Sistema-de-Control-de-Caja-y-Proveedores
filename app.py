@@ -50,7 +50,7 @@ class InterfazCajaApp(ctk.CTk):
         
         self.tab_ventas = self.tabview.add("Caja y Movimientos")
         self.tab_proveedores = self.tabview.add("Proveedores")
-        self.tab_stats = self.tabview.add("📊 Estadísticas & Resumen")
+        self.tab_stats = self.tabview.add("Estadisticas & Resumen")
         
         self.construir_tab_ventas()
         self.construir_tab_proveedores()
@@ -62,10 +62,10 @@ class InterfazCajaApp(ctk.CTk):
     def mostrar_alertas_vencimiento(self):
         alertas = obtener_alertas_vencimiento()
         if alertas:
-            texto_alerta = "Atención: Las siguientes facturas están próximas a vencer o ya vencieron:\n\n"
+            texto_alerta = "Atencion: Las siguientes facturas estan proximas a vencer o ya vencieron:\n\n"
             texto_alerta += "\n".join(alertas)
             texto_alerta += "\n\n(Solo se muestran facturas de proveedores con deuda pendiente)."
-            messagebox.showwarning("Alertas de Vencimientos ⚠️", texto_alerta)
+            messagebox.showwarning("Alertas de Vencimientos", texto_alerta)
         
     def construir_tab_ventas(self):
         self.frame_dashboard = ctk.CTkFrame(self.tab_ventas, fg_color="#F8F9FA", corner_radius=10)
@@ -86,13 +86,13 @@ class InterfazCajaApp(ctk.CTk):
         panel_acciones = ctk.CTkFrame(contenedor_inferior, width=320)
         panel_acciones.pack(side="left", fill="y", padx=10, pady=5)
         
-        ctk.CTkButton(panel_acciones, text="💵 Abrir Caja (Fondo Inicial)", fg_color="#17a2b8", hover_color="#138496", command=self.accion_abrir_caja).pack(padx=20, pady=(10, 5), fill="x")
+        ctk.CTkButton(panel_acciones, text="Abrir Caja (Fondo Inicial)", fg_color="#17a2b8", hover_color="#138496", command=self.accion_abrir_caja).pack(padx=20, pady=(10, 5), fill="x")
         ctk.CTkLabel(panel_acciones, text="Registrar INGRESO (Venta)", font=ctk.CTkFont(size=14, weight="bold")).pack(pady=(10, 5))
         self.entry_ing_monto = ctk.CTkEntry(panel_acciones, placeholder_text="Monto ($)")
         self.entry_ing_monto.pack(padx=20, pady=5, fill="x")
         self.combo_ing_metodo = ctk.CTkComboBox(panel_acciones, values=[m.value for m in MetodoPago])
         self.combo_ing_metodo.pack(padx=20, pady=5, fill="x")
-        ctk.CTkButton(panel_acciones, text="Guardar Ingreso 💰", fg_color="#28a745", hover_color="#218838", command=self.accion_guardar_ingreso).pack(padx=20, pady=(5, 15), fill="x")
+        ctk.CTkButton(panel_acciones, text="Guardar Ingreso", fg_color="#28a745", hover_color="#218838", command=self.accion_guardar_ingreso).pack(padx=20, pady=(5, 15), fill="x")
         
         ctk.CTkLabel(panel_acciones, text="Registrar EGRESO (Gasto)", font=ctk.CTkFont(size=14, weight="bold")).pack(pady=(10, 5))
         self.entry_egr_monto = ctk.CTkEntry(panel_acciones, placeholder_text="Monto ($)")
@@ -101,25 +101,23 @@ class InterfazCajaApp(ctk.CTk):
         self.entry_egr_desc.pack(padx=20, pady=5, fill="x")
         self.combo_egr_metodo = ctk.CTkComboBox(panel_acciones, values=[m.value for m in MetodoPago])
         self.combo_egr_metodo.pack(padx=20, pady=5, fill="x")
-        ctk.CTkButton(panel_acciones, text="Guardar Egreso 📉", fg_color="#dc3545", hover_color="#c82333", command=self.accion_guardar_egreso).pack(padx=20, pady=(5, 20), fill="x")
+        ctk.CTkButton(panel_acciones, text="Guardar Egreso", fg_color="#dc3545", hover_color="#c82333", command=self.accion_guardar_egreso).pack(padx=20, pady=(5, 20), fill="x")
         
-        ctk.CTkButton(panel_acciones, text="🔒 CERRAR CAJA ACTUAL", fg_color="#343a40", hover_color="#23272b", font=ctk.CTkFont(weight="bold"), command=self.accion_cerrar_caja).pack(padx=20, pady=10, fill="x")
+        ctk.CTkButton(panel_acciones, text="CERRAR CAJA ACTUAL", fg_color="#343a40", hover_color="#23272b", font=ctk.CTkFont(weight="bold"), command=self.accion_cerrar_caja).pack(padx=20, pady=10, fill="x")
 
-        # Panel central dividido: Movimientos abiertos y Tabla de cierres
         panel_centro = ctk.CTkFrame(contenedor_inferior, fg_color="transparent")
         panel_centro.pack(side="right", fill="both", expand=True, padx=10, pady=5)
         
-        # Sub-panel de movimientos abiertos con opción de anular
         frame_mov_abiertos = ctk.CTkFrame(panel_centro)
         frame_mov_abiertos.pack(fill="both", expand=True, pady=(0, 5))
         
         top_mov_ab = ctk.CTkFrame(frame_mov_abiertos, fg_color="transparent")
         top_mov_ab.pack(fill="x", padx=10, pady=5)
         ctk.CTkLabel(top_mov_ab, text="Movimientos del Turno Abierto (Selecciona para Anular)", font=ctk.CTkFont(size=12, weight="bold")).pack(side="left")
-        ctk.CTkButton(top_mov_ab, text="❌ Anular Seleccionado", fg_color="#dc3545", hover_color="#c82333", width=140, command=self.accion_anular_movimiento).pack(side="right")
+        ctk.CTkButton(top_mov_ab, text="Anular Seleccionado", fg_color="#dc3545", hover_color="#c82333", width=140, command=self.accion_anular_movimiento).pack(side="right")
         
         self.tabla_mov_abiertos = ttk.Treeview(frame_mov_abiertos, columns=("id", "fecha", "tipo", "monto", "metodo", "desc"), show='headings', height=5)
-        for col, txt in zip(("id", "fecha", "tipo", "monto", "metodo", "desc"), ["ID", "Fecha/Hora", "Tipo", "Monto", "Método", "Descripción"]):
+        for col, txt in zip(("id", "fecha", "tipo", "monto", "metodo", "desc"), ["ID", "Fecha/Hora", "Tipo", "Monto", "Metodo", "Descripcion"]):
             self.tabla_mov_abiertos.heading(col, text=txt)
         self.tabla_mov_abiertos.column("id", width=40, anchor='center')
         self.tabla_mov_abiertos.column("fecha", width=130, anchor='center')
@@ -129,7 +127,6 @@ class InterfazCajaApp(ctk.CTk):
         self.tabla_mov_abiertos.column("desc", width=200, anchor='w')
         self.tabla_mov_abiertos.pack(fill='both', expand=True, padx=10, pady=5)
 
-        # Panel historial con filtro por fechas
         panel_historial = ctk.CTkFrame(panel_centro)
         panel_historial.pack(fill="both", expand=True, pady=(5, 0))
         
@@ -146,7 +143,7 @@ class InterfazCajaApp(ctk.CTk):
         self.entry_filtro_hasta = ctk.CTkEntry(frame_filtros, width=100, placeholder_text="Ej: 30/11/2026")
         self.entry_filtro_hasta.pack(side="left", padx=5)
         
-        ctk.CTkButton(frame_filtros, text="Filtrar 🔍", width=80, command=self.actualizar_tabla_cierres).pack(side="left", padx=10)
+        ctk.CTkButton(frame_filtros, text="Filtrar", width=80, command=self.actualizar_tabla_cierres).pack(side="left", padx=10)
         ctk.CTkButton(frame_filtros, text="Limpiar", width=70, fg_color="gray", command=self.limpiar_filtro_cierres).pack(side="left", padx=2)
 
         self.tabla_cierres = ttk.Treeview(panel_historial, columns=("id", "fecha", "ing", "egr", "saldo"), show='headings')
@@ -198,17 +195,17 @@ class InterfazCajaApp(ctk.CTk):
         item = self.tabla_mov_abiertos.item(sel[0])['values']
         mov_id, tipo, monto = item[0], item[2], item[3]
         if tipo == 'APERTURA':
-            messagebox.showerror("Error", "No se puede anular el fondo de apertura directamente desde aquí. Vuelve a abrir caja con el monto correcto.")
+            messagebox.showerror("Error", "No se puede anular el fondo de apertura directamente.")
             return
-        conf = messagebox.askyesno("Confirmar Anulación", f"¿Estás seguro de anular el movimiento #{mov_id} ({tipo} por {monto})?")
+        conf = messagebox.askyesno("Confirmar Anulacion", f"¿Estas seguro de anular el movimiento #{mov_id} ({tipo} por {monto})?")
         if conf:
             anular_movimiento_caja(mov_id)
             self.actualizar_estado_caja()
             self.actualizar_estadisticas()
-            messagebox.showinfo("Éxito", "Movimiento anulado correctamente.")
+            messagebox.showinfo("Exito", "Movimiento anulado correctamente.")
         
     def accion_abrir_caja(self):
-        dialog = ctk.CTkInputDialog(text="Ingrese el fondo o saldo inicial (billetes físicos actuales):", title="Apertura de Caja")
+        dialog = ctk.CTkInputDialog(text="Ingrese el fondo o saldo inicial:", title="Apertura de Caja")
         res = dialog.get_input()
         if res:
             try:
@@ -217,7 +214,7 @@ class InterfazCajaApp(ctk.CTk):
                 self.actualizar_estado_caja()
                 self.actualizar_estadisticas()
             except ValueError:
-                messagebox.showerror("Error", "Monto inválido.")
+                messagebox.showerror("Error", "Monto invalido.")
 
     def accion_guardar_ingreso(self):
         try:
@@ -250,13 +247,11 @@ class InterfazCajaApp(ctk.CTk):
     def accion_cerrar_caja(self):
         ingresos_dict, tot_ing, tot_egr, saldo_ini, saldo = obtener_resumen_caja_abierta()
         if tot_ing == 0 and tot_egr == 0:
-            messagebox.showinfo("Caja Vacía", "No hay movimientos para cerrar.")
+            messagebox.showinfo("Caja Vacia", "No hay movimientos para cerrar.")
             return
             
-        # Requisito 5: Confirmación antes de cerrar caja
-        confirmar = messagebox.askyesno("Confirmar Cierre de Caja", f"¿Estás seguro de que deseas cerrar la caja?\n\nTotal Ingresos: ${tot_ing:,.2f}\nTotal Egresos: ${tot_egr:,.2f}\nSaldo Final: ${saldo:,.2f}")
-        if not confirmar:
-            return
+        confirmar = messagebox.askyesno("Confirmar Cierre", f"¿Deseas cerrar la caja?\n\nIngresos: ${tot_ing:,.2f}\nEgresos: ${tot_egr:,.2f}\nSaldo Final: ${saldo:,.2f}")
+        if not confirmar: return
 
         cierre_id = cerrar_caja()
         if cierre_id:
@@ -266,7 +261,7 @@ class InterfazCajaApp(ctk.CTk):
             self.actualizar_tabla_cierres()
             self.actualizar_estado_caja()
             self.actualizar_estadisticas()
-            messagebox.showinfo("Cierre Exitoso", f"Caja cerrada. Saldo Final: ${saldo:.2f}\nPDF Generado: {nombre_pdf}")
+            messagebox.showinfo("Cierre Exitoso", f"Caja cerrada. PDF Generado: {nombre_pdf}")
 
     def actualizar_tabla_cierres(self):
         desde = self.entry_filtro_desde.get().strip()
@@ -282,7 +277,7 @@ class InterfazCajaApp(ctk.CTk):
         item = self.tabla_cierres.item(seleccion[0])['values']
         cierre_id, fecha, saldo_fin = item[0], item[1], item[4]
         vent = ctk.CTkToplevel(self)
-        vent.title(f"Detalle de Caja del {fecha} | Saldo Final: {saldo_fin}")
+        vent.title(f"Detalle de Caja | {fecha} | Saldo: {saldo_fin}")
         vent.geometry("850x450")
         vent.transient(self)
         try:
@@ -292,7 +287,7 @@ class InterfazCajaApp(ctk.CTk):
         tree = ttk.Treeview(vent, columns=("hora", "tipo", "metodo", "desc", "monto", "saldo_momento"), show='headings')
         tree.tag_configure("ingreso", foreground="#007a1a")
         tree.tag_configure("egreso", foreground="#d90000")
-        for col, txt in zip(tree["columns"], ["Hora", "Movimiento", "Medio", "Descripción", "Monto", "Saldo en Caja"]):
+        for col, txt in zip(tree["columns"], ["Hora", "Movimiento", "Medio", "Descripcion", "Monto", "Saldo en Caja"]):
             tree.heading(col, text=txt)
         tree.column("hora", width=80, anchor='center')
         tree.column("tipo", width=80, anchor='center')
@@ -310,47 +305,37 @@ class InterfazCajaApp(ctk.CTk):
     def construir_tab_proveedores(self):
         frame_superior = ctk.CTkFrame(self.tab_proveedores)
         frame_superior.pack(fill='x', padx=10, pady=10)
-        
         frame_botones = ctk.CTkFrame(frame_superior, fg_color="transparent")
         frame_botones.pack(side='left', anchor='n', pady=10)
         
-        ctk.CTkButton(frame_botones, text="➕ Nuevo", command=self.accion_nuevo_proveedor, width=100).pack(side='left', padx=5)
-        ctk.CTkButton(frame_botones, text="✏️ Modificar", command=self.accion_modificar_proveedor, fg_color="gray", width=100).pack(side='left', padx=5)
-        ctk.CTkButton(frame_botones, text="📦 Recibir Pedido", command=self.accion_cargar_pedido, fg_color="#17a2b8", hover_color="#138496", width=120).pack(side='left', padx=15)
-        ctk.CTkButton(frame_botones, text="💳 Registrar Pago", command=self.accion_pagar, fg_color="#007bff", width=120).pack(side='left', padx=5)
+        ctk.CTkButton(frame_botones, text="Nuevo", command=self.accion_nuevo_proveedor, width=100).pack(side='left', padx=5)
+        ctk.CTkButton(frame_botones, text="Modificar", command=self.accion_modificar_proveedor, fg_color="gray", width=100).pack(side='left', padx=5)
+        ctk.CTkButton(frame_botones, text="Recibir Pedido", command=self.accion_cargar_pedido, fg_color="#17a2b8", hover_color="#138496", width=120).pack(side='left', padx=15)
+        ctk.CTkButton(frame_botones, text="Registrar Pago", command=self.accion_pagar, fg_color="#007bff", width=120).pack(side='left', padx=5)
         
-        # --- Contenedor Responsivo para Calendario y Texto ---
         frame_vencimientos = ctk.CTkFrame(frame_superior, fg_color="transparent")
         frame_vencimientos.pack(side='left', fill='both', expand=True, padx=(25, 10))
-        
-        ctk.CTkLabel(frame_vencimientos, text="Vencimientos (Clic en día rojo)", font=ctk.CTkFont(size=12, weight="bold")).pack(anchor='w')
-        
+        ctk.CTkLabel(frame_vencimientos, text="Vencimientos (Clic en dia rojo)", font=ctk.CTkFont(size=12, weight="bold")).pack(anchor='w')
         frame_cal_content = ctk.CTkFrame(frame_vencimientos, fg_color="transparent")
         frame_cal_content.pack(fill='both', expand=True, pady=2)
         
         self.cal_venc = Calendar(frame_cal_content, selectmode="day", showweeknumbers=False, font="Arial 9", cursor="hand2")
         self.cal_venc.pack(side='left', padx=(0, 10))
-        
         self.caja_detalle_venc = ctk.CTkTextbox(frame_cal_content, height=170, text_color="#721c24", fg_color="#f8d7da", font=ctk.CTkFont(size=12, weight="bold"))
         self.caja_detalle_venc.pack(side='left', fill='both', expand=True)
-        self.caja_detalle_venc.insert("0.0", "Selecciona un día rojo para ver los detalles...")
+        self.caja_detalle_venc.insert("0.0", "Selecciona un dia rojo para ver los detalles...")
         self.caja_detalle_venc.configure(state="disabled")
-        
         self.cal_venc.bind("<<CalendarSelected>>", self.mostrar_detalle_fecha)
 
         frame_tabla = ctk.CTkFrame(self.tab_proveedores)
         frame_tabla.pack(fill='both', expand=True, padx=10, pady=10)
-        
-        # Requisito 2: Barra de búsqueda y filtro de proveedores
         frame_busqueda = ctk.CTkFrame(frame_tabla, fg_color="transparent")
         frame_busqueda.pack(fill='x', padx=10, pady=5)
-        
         ctk.CTkLabel(frame_busqueda, text="Buscar Proveedor:", font=ctk.CTkFont(weight="bold")).pack(side='left', padx=(0, 10))
-        self.entry_buscar_prov = ctk.CTkEntry(frame_busqueda, placeholder_text="Escribe nombre del proveedor...", width=300)
+        self.entry_buscar_prov = ctk.CTkEntry(frame_busqueda, placeholder_text="Escribe nombre...", width=300)
         self.entry_buscar_prov.pack(side='left', padx=5)
         self.entry_buscar_prov.bind("<KeyRelease>", lambda e: self.actualizar_tabla_proveedores())
-        
-        ctk.CTkButton(frame_busqueda, text="Limpiar Búsqueda", width=120, fg_color="gray", command=lambda: (self.entry_buscar_prov.delete(0, 'end'), self.actualizar_tabla_proveedores())).pack(side='left', padx=10)
+        ctk.CTkButton(frame_busqueda, text="Limpiar", width=120, fg_color="gray", command=lambda: (self.entry_buscar_prov.delete(0, 'end'), self.actualizar_tabla_proveedores())).pack(side='left', padx=10)
         
         self.tabla_prov = ttk.Treeview(frame_tabla, columns=("id", "nombre", "saldo"), show='headings')
         self.tabla_prov.tag_configure("cero", foreground="gray")
@@ -364,17 +349,13 @@ class InterfazCajaApp(ctk.CTk):
         self.tabla_prov.column("saldo", width=150, anchor='e')
         self.tabla_prov.bind("<Double-1>", self.accion_ver_historial_proveedor)
         self.tabla_prov.pack(fill='both', expand=True, padx=10, pady=(0,10))
-        
         self.actualizar_tabla_proveedores()
         self.actualizar_calendario()
 
-    # Requisito 4: Pestaña de Estadísticas & Resumen
     def construir_tab_stats(self):
         frame_stats_main = ctk.CTkFrame(self.tab_stats, fg_color="transparent")
         frame_stats_main.pack(fill="both", expand=True, padx=20, pady=20)
-        
-        ctk.CTkLabel(frame_stats_main, text="📊 Resumen Financiero y Estadísticas del Negocio", font=ctk.CTkFont(size=20, weight="bold")).pack(pady=(0, 20))
-        
+        ctk.CTkLabel(frame_stats_main, text="Resumen Financiero y Estadisticas", font=ctk.CTkFont(size=20, weight="bold")).pack(pady=(0, 20))
         self.frame_cards = ctk.CTkFrame(frame_stats_main, fg_color="transparent")
         self.frame_cards.pack(fill="x", pady=10)
         
@@ -396,18 +377,13 @@ class InterfazCajaApp(ctk.CTk):
         self.lbl_card_egr_val.pack(pady=(20, 5))
         ctk.CTkLabel(self.card_egresos_gen, text="Egresos / Gastos Totales", font=ctk.CTkFont(size=12), text_color="#856404").pack(pady=(0, 20))
 
-        # Detalle por método de pago
         frame_detalles_metodos = ctk.CTkFrame(frame_stats_main)
         frame_detalles_metodos.pack(fill="both", expand=True, padx=10, pady=20)
-        
-        ctk.CTkLabel(frame_detalles_metodos, text="Ingresos Acumulados por Método de Pago", font=ctk.CTkFont(size=14, weight="bold")).pack(pady=10)
-        
+        ctk.CTkLabel(frame_detalles_metodos, text="Ingresos Acumulados por Metodo de Pago", font=ctk.CTkFont(size=14, weight="bold")).pack(pady=10)
         self.txt_metodos_stats = ctk.CTkTextbox(frame_detalles_metodos, height=150, font=ctk.CTkFont(size=13))
         self.txt_metodos_stats.pack(fill="both", expand=True, padx=20, pady=10)
         self.txt_metodos_stats.configure(state="disabled")
-        
-        ctk.CTkButton(frame_stats_main, text="🔄 Actualizar Estadísticas", command=self.actualizar_estadisticas).pack(pady=10)
-        
+        ctk.CTkButton(frame_stats_main, text="Actualizar Estadisticas", command=self.actualizar_estadisticas).pack(pady=10)
         self.actualizar_estadisticas()
 
     def actualizar_estadisticas(self):
@@ -415,11 +391,9 @@ class InterfazCajaApp(ctk.CTk):
         self.lbl_card_deuda_val.configure(text=f"${stats['total_deuda']:,.2f}")
         self.lbl_card_ing_val.configure(text=f"${stats['tot_ingresos']:,.2f}")
         self.lbl_card_egr_val.configure(text=f"${stats['tot_egresos']:,.2f}")
-        
         texto_metodos = ""
         for metodo, monto in stats['metodos_ingreso'].items():
             texto_metodos += f"• {metodo}: ${monto:,.2f}\n"
-            
         self.txt_metodos_stats.configure(state="normal")
         self.txt_metodos_stats.delete("0.0", "end")
         self.txt_metodos_stats.insert("0.0", texto_metodos)
@@ -436,16 +410,13 @@ class InterfazCajaApp(ctk.CTk):
     def mostrar_detalle_fecha(self, event):
         fecha_sel = self.cal_venc.selection_get()
         ev_ids = self.cal_venc.get_calevents(date=fecha_sel)
-        
         self.caja_detalle_venc.configure(state="normal")
         self.caja_detalle_venc.delete("0.0", "end")
-        
         if ev_ids:
             textos = [self.cal_venc.calevent_cget(ev_id, 'text') for ev_id in ev_ids]
             self.caja_detalle_venc.insert("0.0", "\n".join(textos))
         else:
-            self.caja_detalle_venc.insert("0.0", "Sin vencimientos este día.")
-            
+            self.caja_detalle_venc.insert("0.0", "Sin vencimientos este dia.")
         self.caja_detalle_venc.configure(state="disabled")
 
     def actualizar_tabla_proveedores(self):
@@ -497,7 +468,6 @@ class InterfazCajaApp(ctk.CTk):
         seleccion = self.tabla_prov.selection()
         if not seleccion: return
         prov_id, prov_nombre = self.tabla_prov.item(seleccion[0])['values'][:2]
-        
         vent = ctk.CTkToplevel(self)
         vent.title(f"Recibir Pedido - {prov_nombre}")
         vent.geometry("400x480")
@@ -506,36 +476,32 @@ class InterfazCajaApp(ctk.CTk):
             ruta_icono = os.path.join(os.path.dirname(os.path.abspath(__file__)), "icono.ico")
             vent.iconbitmap(ruta_icono)
         except Exception: pass
-            
         def crear_campo(texto, placeholder=""):
             ctk.CTkLabel(vent, text=texto).pack(pady=(10,2))
             ent = ctk.CTkEntry(vent, width=300, placeholder_text=placeholder)
             ent.pack()
             return ent
-            
         ent_monto = crear_campo("Monto de la Deuda ($) *:")
         ent_fact = crear_campo("Nro. Factura (Opcional):")
         ent_remito = crear_campo("Nro. Remito (Opcional):")
-        ent_venc = crear_campo("Fecha Vencimiento (Si dejas en blanco = 30 días auto):", "Ej: 15/11/2026")
-        ent_desc = crear_campo("Descripción general:")
+        ent_venc = crear_campo("Fecha Vencimiento (Si en blanco = 30 dias auto):", "Ej: 15/11/2026")
+        ent_desc = crear_campo("Descripcion general:")
         
         def guardar():
             try:
                 monto_str = ent_monto.get().replace(',', '.')
                 if not monto_str: raise ValueError
                 monto = float(monto_str)
-                
                 fecha_v = ent_venc.get().strip()
                 if fecha_v:
                     try:
                         datetime.strptime(fecha_v, "%d/%m/%Y")
                     except ValueError:
-                        messagebox.showerror("Error de Formato", "La fecha de vencimiento debe tener el formato DD/MM/AAAA (Día/Mes/Año).\nEjemplo: 25/12/2026")
+                        messagebox.showerror("Error de Formato", "El formato debe ser DD/MM/AAAA.")
                         self.marcar_error(ent_venc)
                         return
                 else:
                     fecha_v = (datetime.now() + timedelta(days=30)).strftime("%d/%m/%Y")
-                                 
                 registrar_pedido_proveedor(prov_id, monto, ent_desc.get(), ent_fact.get(), ent_remito.get(), fecha_v)
                 self.actualizar_tabla_proveedores()
                 self.actualizar_calendario()
@@ -543,7 +509,6 @@ class InterfazCajaApp(ctk.CTk):
                 vent.destroy()
             except ValueError:
                 self.marcar_error(ent_monto)
-                
         ctk.CTkButton(vent, text="Guardar Pedido", command=guardar).pack(pady=25)
 
     def accion_pagar(self):
@@ -570,12 +535,9 @@ class InterfazCajaApp(ctk.CTk):
         def procesar():
             try:
                 monto = float(ent_monto.get().replace(',', '.'))
-                
-                # Requisito 5: Confirmación ante pagos grandes o generales
                 if monto > 10000:
-                    conf = messagebox.askyesno("Confirmar Pago", f"¿Estás seguro de registrar un pago por ${monto:,.2f} a {prov_nombre}?")
+                    conf = messagebox.askyesno("Confirmar Pago", f"¿Estas seguro de registrar pago por ${monto:,.2f} a {prov_nombre}?")
                     if not conf: return
-                
                 metodo_enum = next(m for m in MetodoPago if m.value == combo_metodo.get())
                 descontar = True if var_caja.get() == "on" else False
                 pagar_deuda_proveedor(prov_id, monto, metodo_enum, descontar)
@@ -593,35 +555,96 @@ class InterfazCajaApp(ctk.CTk):
         if not seleccion: return
         item = self.tabla_prov.item(seleccion[0])['values']
         prov_id, prov_nombre, saldo_actual = item[0], item[1], item[2]
+        
         vent = ctk.CTkToplevel(self)
         vent.title(f"Historial - {prov_nombre}")
-        vent.geometry("1100x450")
-        
-        frame_top_hist = ctk.CTkFrame(vent, fg_color="transparent")
-        frame_top_hist.pack(fill='x', padx=20, pady=(20,0))
-        
-        lbl_titulo = ctk.CTkLabel(frame_top_hist, text=f"Deuda Actual: {saldo_actual}", font=ctk.CTkFont(size=16, weight="bold"))
-        lbl_titulo.pack(side='left')
-        
-        def exportar():
-            hist = obtener_historial_proveedor(prov_id)
-            if not hist: return
-            f_str = datetime.now().strftime("%Y%m%d_%H%M")
-            n_pdf = f"resumen_cuenta_{prov_nombre.replace(' ', '_')}_{f_str}.pdf"
-            generar_pdf_proveedor(prov_nombre, saldo_actual, hist, n_pdf)
-            messagebox.showinfo("Exportado", f"Resumen generado exitosamente:\n{n_pdf}")
-            
-        ctk.CTkButton(frame_top_hist, text="📄 Exportar a PDF", fg_color="#28a745", hover_color="#218838", command=exportar).pack(side='right')
+        vent.geometry("1100x480")
+        vent.transient(self)
         try:
             ruta_icono = os.path.join(os.path.dirname(os.path.abspath(__file__)), "icono.ico")
             vent.iconbitmap(ruta_icono)
         except Exception: pass
-        cols = ("fecha", "tipo", "monto", "factura", "remito", "venc", "desc", "saldo_mom")
-        tree = ttk.Treeview(vent, columns=cols, show='headings')
+        
+        frame_top_hist = ctk.CTkFrame(vent, fg_color="transparent")
+        frame_top_hist.pack(fill='x', padx=20, pady=(20,0))
+        lbl_titulo = ctk.CTkLabel(frame_top_hist, text=f"Deuda Actual: {saldo_actual}", font=ctk.CTkFont(size=16, weight="bold"))
+        lbl_titulo.pack(side='left')
+        
+        def exportar():
+            from services import obtener_historial_proveedor
+            hist = obtener_historial_proveedor(prov_id)
+            if not hist: return
+            f_str = datetime.now().strftime("%Y%m%d_%H%M")
+            n_pdf = f"resumen_cuenta_{prov_nombre.replace(' ', '_')}_{f_str}.pdf"
+            generar_pdf_proveedor(prov_nombre, lbl_titulo.cget("text").replace("Deuda Actual: ", ""), hist, n_pdf)
+            messagebox.showinfo("Exportado", f"Resumen generado exitosamente:\n{n_pdf}")
+            
+        ctk.CTkButton(frame_top_hist, text="Exportar a PDF", fg_color="#28a745", hover_color="#218838", command=exportar).pack(side='right')
+        
+        def abrir_edicion():
+            sel = tree.selection()
+            if not sel:
+                messagebox.showwarning("Atencion", "Selecciona un pedido de la lista para modificar.")
+                return
+            item_vals = tree.item(sel[0])['values']
+            m_id, m_fecha, m_tipo, m_monto_str, m_fact, m_remito, m_venc, m_desc = item_vals[0], item_vals[1], item_vals[2], item_vals[3], item_vals[4], item_vals[5], item_vals[6], item_vals[7]
+            
+            if m_tipo != 'PEDIDO':
+                messagebox.showerror("Error", "Solo puedes modificar PEDIDOS desde esta opcion.")
+                return
+            
+            monto_limpio = str(m_monto_str).replace('$', '').replace(',', '')
+            
+            v_ed = ctk.CTkToplevel(vent)
+            v_ed.title(f"Modificar Pedido - {prov_nombre}")
+            v_ed.geometry("400x520")
+            v_ed.transient(vent)
+            v_ed.grab_set()
+            
+            def crear_campo(texto, valor):
+                ctk.CTkLabel(v_ed, text=texto).pack(pady=(10,2))
+                e = ctk.CTkEntry(v_ed, width=300)
+                e.insert(0, valor if valor != "-" else "")
+                e.pack()
+                return e
+                
+            e_monto = crear_campo("Monto de la Deuda ($) *:", monto_limpio)
+            e_fact = crear_campo("Nro. Factura:", m_fact)
+            e_remito = crear_campo("Nro. Remito:", m_remito)
+            e_venc = crear_campo("Fecha Vencimiento (DD/MM/AAAA):", m_venc)
+            e_desc = crear_campo("Descripcion:", m_desc)
+            
+            def guardar():
+                try:
+                    nmonto = float(e_monto.get().replace(',', '.'))
+                    fvenc = e_venc.get().strip()
+                    if fvenc:
+                        datetime.strptime(fvenc, "%d/%m/%Y") 
+                    if messagebox.askyesno("Confirmar Cambios", "¿Estas seguro de guardar los cambios?\n\nEsto recalculara el historial."):
+                        from services import modificar_pedido_proveedor, obtener_proveedor
+                        modificar_pedido_proveedor(m_id, nmonto, e_desc.get(), e_fact.get(), e_remito.get(), fvenc)
+                        cargar_arbol()
+                        self.actualizar_tabla_proveedores()
+                        self.actualizar_estadisticas()
+                        if hasattr(self, 'actualizar_calendario'): self.actualizar_calendario()
+                        p_act = obtener_proveedor(prov_id)
+                        lbl_titulo.configure(text=f"Deuda Actual: ${p_act['saldo']:,.2f}")
+                        v_ed.destroy()
+                        messagebox.showinfo("Exito", "Pedido modificado correctamente.")
+                except ValueError:
+                    messagebox.showerror("Error", "Monto o Fecha invalida. Revisa los formatos.")
+            ctk.CTkButton(v_ed, text="Guardar Cambios", fg_color="#ffc107", text_color="black", hover_color="#e0a800", command=guardar).pack(pady=25)
+            
+        ctk.CTkButton(frame_top_hist, text="Modificar Pedido", fg_color="#17a2b8", hover_color="#138496", command=abrir_edicion).pack(side='right', padx=10)
+        
+        cols = ("id", "fecha", "tipo", "monto", "factura", "remito", "venc", "desc", "saldo_mom")
+        tree = ttk.Treeview(vent, columns=cols, show='headings', displaycolumns=("fecha", "tipo", "monto", "factura", "remito", "venc", "desc", "saldo_mom"))
         tree.tag_configure("pago", foreground="#007a1a")
         tree.tag_configure("pedido", foreground="#d90000")
-        for col, txt in zip(cols, ["Fecha", "Tipo", "Monto", "Factura", "Remito", "Venc.", "Descripción", "Saldo Final Día"]):
+        
+        for col, txt in zip(cols[1:], ["Fecha", "Tipo", "Monto", "Factura", "Remito", "Venc.", "Descripcion", "Saldo Final Dia"]):
             tree.heading(col, text=txt)
+            
         tree.column("fecha", width=120, anchor='center')
         tree.column("tipo", width=80, anchor='center')
         tree.column("monto", width=100, anchor='e')
@@ -631,45 +654,17 @@ class InterfazCajaApp(ctk.CTk):
         tree.column("desc", width=250)
         tree.column("saldo_mom", width=110, anchor='e')
         tree.pack(fill='both', expand=True, padx=20, pady=20)
-        for h in obtener_historial_proveedor(prov_id):
-            tag = "pago" if h['tipo'] == 'PAGO' else "pedido"
-            m_str = f"${h['monto']:.2f}"
-            if h['tipo'] == 'PAGO': m_str = f"- {m_str}"
-            tree.insert("", "end", values=(h['fecha'], h['tipo'], m_str, h['factura'], h['remito'], h['vencimiento'], h['descripcion'], f"${h['saldo_momento']:.2f}"), tags=(tag,))
+        
+        def cargar_arbol():
+            from services import obtener_historial_proveedor
+            for fila in tree.get_children(): tree.delete(fila)
+            for h in obtener_historial_proveedor(prov_id):
+                tag = "pago" if h['tipo'] == 'PAGO' else "pedido"
+                m_str = f"${h['monto']:.2f}"
+                if h['tipo'] == 'PAGO': m_str = f"- {m_str}"
+                tree.insert("", "end", values=(h['id'], h['fecha'], h['tipo'], m_str, h['factura'], h['remito'], h['vencimiento'], h['descripcion'], f"${h['saldo_momento']:.2f}"), tags=(tag,))
+        cargar_arbol()
 
 if __name__ == "__main__":
     app = InterfazCajaApp()
     app.mainloop()
-
-    def accion_hacer_backup(from_self, self=None):
-        # Manejo flexible de self
-        app_inst = from_self if hasattr(from_self, 'after') else self
-        from tkinter import filedialog
-        f_name = f"backup_caja_{datetime.now().strftime('%Y%m%d_%H%M%S')}.db"
-        archivo = filedialog.asksaveasfilename(defaultextension=".db", initialfile=f_name, filetypes=[("Database files", "*.db"), ("All files", "*.*")])
-        if archivo:
-            exito = hacer_backup_base_datos(archivo)
-            if exito:
-                messagebox.askyesno("Éxito", "¡Respaldo de base de datos generado con éxito en:\n" + archivo)
-            else:
-                messagebox.showerror("Error", "No se pudo generar el respaldo.")
-
-    def accion_exportar_csv(from_self, self=None):
-        app_inst = from_self if hasattr(from_self, 'after') else self
-        from tkinter import filedialog
-        import csv
-        archivo = filedialog.asksaveasfilename(defaultextension=".csv", initialfile=f"historial_cierres_{datetime.now().strftime('%Y%m%d')}.csv", filetypes=[("CSV files", "*.csv"), ("All files", "*.*")])
-        if archivo:
-            try:
-                cierres = obtener_historial_cierres()
-                with open(archivo, mode='w', newline='', encoding='utf-8') as f:
-                    writer = csv.writer(f)
-                    writer.writerow(["ID Cierre", "Fecha y Hora", "Total Ingresos", "Total Egresos", "Saldo Final"])
-                    for c in cierres:
-                        writer.writerow([c['id'], c['fecha'], c['ingresos'], c['egresos'], c['saldo_final']])
-                messagebox.showinfo("Exportado", "Historial exportado exitosamente a CSV.")
-            except Exception as e:
-                messagebox.showerror("Error", f"No se pudo exportar: {e}")
-
-    def cambiar_modo_tema(self, nuevo_modo):
-        ctk.set_appearance_mode(nuevo_modo)
